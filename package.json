@@ -8,5 +8,7 @@
   "dependencies": {
     "telegraf": "^4.0.0",
     "node-fetch": "^2.6.1"
+    "engines": {
+  "node": ">=14.0.0" 
   }
 }
