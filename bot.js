@@ -2,7 +2,7 @@ const { Telegraf } = require('telegraf');
 const fetch = require('node-fetch');
 
 // Replace with your Telegram bot token
-const bot = new Telegraf('YOUR_TELEGRAM_BOT_TOKEN');
+const bot = new Telegraf('7259089235:AAGo6taS77cwlqsy3-7H_n8gqSD44FYwBdY');
 
 // Game details as in your original script
 const games = {
