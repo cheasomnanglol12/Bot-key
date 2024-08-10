@@ -2,7 +2,7 @@ const { Telegraf } = require('telegraf');
 const fetch = require('node-fetch');
 
 // Replace with your Telegram bot token
-const bot = new Telegraf('7259089235:AAGo6taS77cwlqsy3-7H_n8gqSD44FYwBdY');
+const bot = new Telegraf('YOUR_TELEGRAM_BOT_TOKEN');
 
 // Game details as in your original script
 const games = {
@@ -28,24 +28,45 @@ const games = {
     }
 };
 
+// Start command: Greets the user and explains what the bot can do
 bot.start((ctx) => {
-    ctx.reply('Welcome! Please choose a game and enter the number of keys you want to generate.');
+    ctx.reply('Welcome to the Game Key Generator bot! You can generate promo keys for games using this bot.\n\n' +
+        'Commands:\n' +
+        '/games - List available games\n' +
+        '/generate [game_id] [key_count] - Generate a specific number of keys for a game\n');
 });
 
-// Command to trigger key generation
+// Help command: Provides a summary of available commands
+bot.help((ctx) => {
+    ctx.reply('Here are the commands you can use:\n\n' +
+        '/games - List available games\n' +
+        '/generate [game_id] [key_count] - Generate a specific number of keys for a game\n' +
+        '/start - Restart the bot\n');
+});
+
+// Command to list available games
+bot.command('games', (ctx) => {
+    const gameList = Object.keys(games).map(id => `${id}. ${games[id].name}`).join('\n');
+    ctx.reply(`Available games:\n${gameList}\n\nUse /generate [game_id] [key_count] to generate keys.`);
+});
+
+// Command to generate keys
 bot.command('generate', async (ctx) => {
     const messageParts = ctx.message.text.split(' ');
     const gameChoice = parseInt(messageParts[1]);
     const keyCount = parseInt(messageParts[2]);
 
+    if (!gameChoice || !keyCount) {
+        return ctx.reply('Usage: /generate [game_id] [key_count]\nExample: /generate 1 5');
+    }
+
     const game = games[gameChoice];
     if (!game) {
-        return ctx.reply('Invalid game choice. Please try again.');
+        return ctx.reply('Invalid game choice. Please use /games to list available games.');
     }
 
     ctx.reply(`Generating ${keyCount} keys for ${game.name}...`);
 
-    // Progress simulation
     const keys = await Promise.all(Array.from({ length: keyCount }, () => generateKeyProcess(game)));
 
     ctx.reply(`Generated keys:\n${keys.filter(k => k).join('\n')}`);
@@ -61,7 +82,6 @@ const generateKeyProcess = async (game) => {
         return `Failed to login: ${error.message}`;
     }
 
-    // Emulate progress
     for (let i = 0; i < 11; i++) {
         await sleep(20000 * delayRandom());
         const hasCode = await emulateProgress(clientToken, game.promoId);
